@@ -90,7 +90,7 @@ async function logoutUserController(req, res) {
 async function getMeController(req, res) {
     const user = await User.findById(req.user.id);
     res.status(200).json({ 
-        message: "User details retrieved successfully",
+        message: "User details fetched successfully",
         user : {
         id: user._id,
         username: user.username,
