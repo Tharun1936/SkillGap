@@ -1,12 +1,26 @@
-import React from 'react'
-import { useNavigate } from 'react-router';
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth'
 
 const Register = () => {
     const navigate = useNavigate();
+    const { loading , handleRegister } = useAuth();
 
-    const handlesubmit = (e) => {
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handlesubmit = async (e) => {
         e.preventDefault();
-        // Handle login logic here
+        try{
+          await handleRegister({ username, email, password });
+          navigate('/login');
+        } catch(err) {
+          // TODO: show error
+        }
+        if(loading){
+          return <div>Loading...</div>
+        }
     }
 
   return (
@@ -17,15 +31,15 @@ const Register = () => {
             <form onSubmit={handlesubmit}>
                 <div className='input-group'>
                     <label htmlFor="username">Username</label>
-                    <input type="text" id="username" placeholder='Enter your username' />
+                    <input value={username} onChange={(e)=>setUsername(e.target.value)} type="text" id="username" placeholder='Enter your username' />
                 </div>
                 <div className='input-group'>
                     <label htmlFor="email">Email</label>
-                    <input type="email" id="email" placeholder='Enter your email' />
+                    <input value={email} onChange={(e)=>setEmail(e.target.value)} type="email" id="email" placeholder='Enter your email' />
                 </div>
                 <div className='input-group'>
                     <label htmlFor="password">Password</label>
-                    <input type="password" id="password" placeholder='Enter your password' />
+                    <input value={password} onChange={(e)=>setPassword(e.target.value)} type="password" id="password" placeholder='Enter your password' />
                 </div>
                 <button className='button primary-button'>Register</button>
             </form>
