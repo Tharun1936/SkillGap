@@ -16,7 +16,7 @@ const Register = () => {
           await handleRegister({ username, email, password });
           navigate('/login');
         } catch(err) {
-          // TODO: show error
+          alert(err?.data?.message || "Registration failed");
         }
         if(loading){
           return <div>Loading...</div>

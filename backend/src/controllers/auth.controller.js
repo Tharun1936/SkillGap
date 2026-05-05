@@ -31,6 +31,15 @@ async function registerUserController(req,res) {
     )
     await newUser.save();
 
+    // set cookie on registration as well so the user is authenticated immediately
+    const cookieOptions = {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: false,
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
+    };
+    res.cookie("token", token, cookieOptions);
+
     return res.status(201).json({ message: "User registered successfully",
         user: {
             id: newUser._id,
@@ -62,7 +71,15 @@ async function loginUserController (req,res) {
         { expiresIn: '1d' }
     );
 
-    res.cookie("token", token, { httpOnly: true });
+    // use explicit cookie options for local development
+    const cookieOptions = {
+        httpOnly: true,
+        sameSite: 'lax', // allow cross-site cookie on navigation
+        secure: false, // set true in production when using HTTPS
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
+    };
+
+    res.cookie("token", token, cookieOptions);
 
     return res.status(200).json({
         message: "User logged in successfully",

@@ -18,7 +18,6 @@ export const useAuth = () => {
             setUser(data.user || null);
             return data;
         } catch (error) {
-            console.error("Login failed:", error);
             throw error;
         } finally {
             setLoading(false);
@@ -32,7 +31,6 @@ export const useAuth = () => {
             setUser(data.user || null);
             return data;
         } catch (error) {
-            console.error("Registration failed:", error);
             throw error;
         } finally {
             setLoading(false);
@@ -59,6 +57,11 @@ export const useAuth = () => {
             setUser(data.user || null);
             return data;
         } catch (error) {
+            // If unauthorized, clear user and return null instead of throwing to avoid uncaught promise
+            if (error && (error.status === 401 || error.message === 'Unauthorized')) {
+                setUser(null);
+                return null;
+            }
             console.error("Fetch user failed:", error);
             throw error;
         } finally {
@@ -66,15 +69,16 @@ export const useAuth = () => {
         }
     };
 
-    
     useEffect(() => {
-        const fetchUser = async () => {
-            setLoading(true);
-            const userData = await getMe();
-            setUser(userData);
-            setLoading(false);
-        };
-        fetchUser();
+        // Immediately attempt to load current user, but handle failures gracefully
+        (async () => {
+            try {
+                await fetchUser();
+            } catch (err) {
+                // swallow non-auth errors to avoid unhandled rejections during app boot
+                console.error('Initial fetchUser error:', err);
+            }
+        })();
     }, []);
 
     return {

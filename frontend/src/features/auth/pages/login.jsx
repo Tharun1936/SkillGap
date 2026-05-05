@@ -19,7 +19,7 @@ const Login = () => {
           await handleLogin({ email, password });
           navigate('/');
         } catch (err) {
-          // show error (TODO)
+          alert(err?.data?.message || "Login failed");
         }
     };
     if(loading){
